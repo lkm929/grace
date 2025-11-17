@@ -61,18 +61,18 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--num_gpu", type=int, default=1, help="number of gpus")
 parser.add_argument("--spatial_size", type=int, default=64, help="one patch dimension")
 parser.add_argument("--a_min_value", type=int, default=0, help="minimum image intensity")
-parser.add_argument("--N_classes", type=int, default=12, help="number of tissues classes")
+parser.add_argument("--N_classes", type=int, default=7, help="number of tissues classes")
 parser.add_argument("--a_max_value", type=int, default=255, help="maximum image intensity")
 parser.add_argument("--batch_size_test", type=int, default=1, help="batch size testing data")
-parser.add_argument("--model_load_name", type=str, default="unetr_v5_bfc.pth", help="model to load")
+parser.add_argument("--model_load_name", type=str, default="unetr_v5_cos.pth", help="model to load")
 parser.add_argument("--dataparallel", type=str, default="False", help="did your model use multi-gpu")
-parser.add_argument("--json_name", type=str, default="dataset.json", help="name of the file used to map data splits")
-parser.add_argument("--data_dir", type=str, default="/path/to/data/folder/", help="directory the dataset is in")
+parser.add_argument("--json_name", type=str, default=r"dataset.json", help="name of the file used to map data splits")
+parser.add_argument("--data_dir", type=str, default=r"C:\Users\iris\Desktop\GRACE\Data", help="directory the dataset is in")
 args = parser.parse_args()
 
 split_JSON = args.json_name # Make sure that the JSON file, with exact name, is in the data_dir folder
-datasets = args.data_dir + split_JSON # Add / to data_dir if not present or change this line to hardcode the path
-
+datasets = os.path.join(args.data_dir, split_JSON) # Add / to data_dir if not present or change this line to hardcode the path
+print(f"Using dataset file: {datasets}")
 #os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -189,6 +189,9 @@ for i in range(case_num):
 
     # Build save path
     filename, _ = os.path.splitext(img_name)
-    savepath = os.path.join(save_dir, filename + ".nii.gz")
-
+    # print(f"DEBUG filename: {filename.split('\\')[-1]}")
+    # print(f"DEBUG save_dir: {save_dir}")
+    savepath = os.path.join(save_dir, filename.split("\\")[-1] + ".nii.gz")
+    # print(f"DEBUG Saving to {savepath}")
     nib.save(new_img, savepath)
+    # print(f"Image {i} saved.")

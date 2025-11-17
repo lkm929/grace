@@ -17,3 +17,4 @@ mlflow
 psutil
 clearml
 torchvision
+kagglehub

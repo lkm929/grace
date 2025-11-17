@@ -66,21 +66,22 @@ print_config()
 
 # our CLI parser
 parser = argparse.ArgumentParser()
-parser.add_argument("--num_gpu", type=int, default=3, help="number of gpus")
+parser.add_argument("--num_gpu", type=int, default=1, help="number of gpus")
 parser.add_argument("--spatial_size", type=int, default=64, help="one patch dimension")
 parser.add_argument("--a_min_value", type=int, default=0, help="minimum image intensity")
-parser.add_argument("--N_classes", type=int, default=12, help="number of tissues classes")
+parser.add_argument("--N_classes", type=int, default=7, help="number of tissues classes")
 parser.add_argument("--a_max_value", type=int, default=255, help="maximum image intensity")
-parser.add_argument("--max_iteration", type=int, default=25000, help="number of iterations")
+parser.add_argument("--max_iteration", type=int, default=25000, help="number of iterations") # 25000
 parser.add_argument("--batch_size_train", type=int, default=10, help="batch size training data")
 parser.add_argument("--model_save_name", type=str, default="unetr_v5_cos", help="model save name")
 parser.add_argument("--batch_size_validation", type=int, default=5, help="batch size validation data")
-parser.add_argument("--json_name", type=str, default="dataset.json", help="name of the file used to map data splits")
-parser.add_argument("--data_dir", type=str, default="/red/nvidia-ai/SkylarStolte/training_pairs_v5/", help="directory the dataset is in")
+parser.add_argument("--json_name", type=str, default=r"dataset.json", help="name of the file used to map data splits")
+parser.add_argument("--data_dir", type=str, default=r"C:\Users\iris\Desktop\GRACE\Data", help="directory the dataset is in")
 args = parser.parse_args()
 
 split_JSON = args.json_name #"dataset.json". Make sure that the JSON file, with exact name, is in the data_dir folder
-datasets = args.data_dir + split_JSON # Add / to data_dir if not present or change this line to hardcode the path
+datasets = os.path.join(args.data_dir, split_JSON) # Add / to data_dir if not present or change this line to hardcode the path
+print(f"Using dataset file: {datasets}")
 num_classes = args.N_classes
 
 #-----------------------------------
