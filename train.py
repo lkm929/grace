@@ -72,16 +72,18 @@ parser.add_argument("--N_classes", type=int, default=7, help="number of tissues 
 parser.add_argument("--a_max_value", type=int, default=255, help="maximum image intensity")
 parser.add_argument("--max_iteration", type=int, default=25000, help="number of iterations") # 25000
 parser.add_argument("--batch_size_train", type=int, default=10, help="batch size training data")
-parser.add_argument("--model_save_name", type=str, default="unetr_v5_cos", help="model save name")
 parser.add_argument("--batch_size_validation", type=int, default=5, help="batch size validation data")
 parser.add_argument("--json_name", type=str, default=r"dataset.json", help="name of the file used to map data splits")
-parser.add_argument("--data_dir", type=str, default=r"C:\Users\51236\Documents\CV\grace\Data", help="directory the dataset is in")
+# parser.add_argument("--data_dir", type=str, default=r"C:\Users\51236\Documents\CV\grace\Data", help="directory the dataset is in")
+parser.add_argument("--data_dir", type=str, default=r"C:\Users\irisc\Documents\CV\grace\Data", help="directory the dataset is in")
 parser.add_argument("--model", type=str, default="unetr", help="unet unetr swinunetr aftunet")
 args = parser.parse_args()
 
 split_JSON = args.json_name #"dataset.json". Make sure that the JSON file, with exact name, is in the data_dir folder
 datasets = os.path.join(args.data_dir, split_JSON) # Add / to data_dir if not present or change this line to hardcode the path
+model_save_name = f'{args.model}_{time.strftime("%Y%m%d-%H%M%S")}'
 print(f"Using dataset file: {datasets}")
+print(f"model save name: {model_save_name}")
 num_classes = args.N_classes
 
 #-----------------------------------
@@ -302,7 +304,7 @@ def validation(epoch_iterator_val):
 #-----------------------------------
 
 from torch.utils.tensorboard import SummaryWriter
-output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs', args.model, time.strftime("%Y%m%d-%H%M%S"))
+output_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'logs', model_save_name)
 writer = SummaryWriter(log_dir=output_dir)
 
 def train(global_step, train_loader, dice_val_best, global_step_best):
@@ -341,7 +343,7 @@ def train(global_step, train_loader, dice_val_best, global_step_best):
                 dice_val_best = dice_val
                 global_step_best = global_step
                 torch.save(
-                    model.state_dict(), os.path.join(args.data_dir, args.model_save_name + ".pth")
+                    model.state_dict(), os.path.join(args.data_dir, model_save_name + ".pth")
                 )
                 print(
                     "Model Was Saved ! Current Best Avg. Dice: {} Current Avg. Dice: {}".format(
@@ -374,7 +376,7 @@ while global_step < max_iterations:
         global_step, train_loader, dice_val_best, global_step_best
     )
 # load checkpoint using map_location so GPU-saved checkpoints can be loaded on CPU
-model.load_state_dict(torch.load(os.path.join(args.data_dir, args.model_save_name + ".pth"), map_location=device))
+model.load_state_dict(torch.load(os.path.join(args.data_dir, model_save_name + ".pth"), map_location=device))
 
 
 #-----------------------------------
@@ -391,7 +393,7 @@ plt.plot(x, y)
 
 dict = {'Iteration': x, 'Loss': y}  
 df = pd.DataFrame(dict) 
-df.to_csv(os.path.join(args.data_dir,args.model_save_name + '_Loss.csv'))
+df.to_csv(os.path.join(args.data_dir,model_save_name + '_Loss.csv'))
 
 plt.subplot(1, 2, 2)
 plt.title("Val Mean Dice")
@@ -400,11 +402,11 @@ y = metric_values
 plt.xlabel("Iteration")
 plt.plot(x, y)
 #plt.show() #uncomment to see the plot immediately
-plt.savefig(os.path.join(args.data_dir, args.model_save_name + "_training_metrics.pdf"))
+plt.savefig(os.path.join(args.data_dir, model_save_name + "_training_metrics.pdf"))
 
 dict = {'Iteration': x, 'Dice': y}  
 df = pd.DataFrame(dict) 
-df.to_csv(os.path.join(args.data_dir,args.model_save_name + '_ValidationDice.csv'))
+df.to_csv(os.path.join(args.data_dir,model_save_name + '_ValidationDice.csv'))
 
 #------------------------------------
 #time since start
