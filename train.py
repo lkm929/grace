@@ -74,8 +74,9 @@ parser.add_argument("--max_iteration", type=int, default=25000, help="number of 
 parser.add_argument("--batch_size_train", type=int, default=10, help="batch size training data")
 parser.add_argument("--batch_size_validation", type=int, default=5, help="batch size validation data")
 parser.add_argument("--json_name", type=str, default=r"dataset.json", help="name of the file used to map data splits")
-# parser.add_argument("--data_dir", type=str, default=r"C:\Users\51236\Documents\CV\grace\Data", help="directory the dataset is in")
-parser.add_argument("--data_dir", type=str, default=r"C:\Users\irisc\Documents\CV\grace\Data", help="directory the dataset is in")
+parser.add_argument("--data_dir", type=str, default=r"C:\Users\51236\Documents\CV\grace\Data", help="directory the dataset is in")
+# parser.add_argument("--data_dir", type=str, default=r"C:\Users\irisc\Documents\CV\grace\Data", help="directory the dataset is in")
+# parser.add_argument("--data_dir", type=str, default=r"C:\Users\iris\Desktop\GRACE\Data", help="directory the dataset is in")
 parser.add_argument("--model", type=str, default="unetr", help="unet unetr swinunetr aftunet")
 args = parser.parse_args()
 
