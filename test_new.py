@@ -2,6 +2,7 @@
 
 """
 python .\test_new.py --model_load_name unetr_20251122-182209.pth
+python .\test_new.py --model_load_name aftunet_20251122-184618.pth
 """
 
 
@@ -29,7 +30,6 @@ from monai.transforms import (
 )
 
 from monai.config import print_config
-from monai.networks.nets import UNETR
 
 from monai.data import (
     Dataset,
@@ -69,8 +69,8 @@ parser.add_argument("--batch_size_test", type=int, default=1, help="batch size t
 parser.add_argument("--model_load_name", type=str, default="unetr_v5_cos.pth", help="model to load")
 parser.add_argument("--dataparallel", type=str, default="False", help="did your model use multi-gpu")
 parser.add_argument("--json_name", type=str, default=r"dataset.json", help="name of the file used to map data splits")
-parser.add_argument("--data_dir", type=str, default=r"C:\Users\51236\Documents\CV\grace\Data", help="directory the dataset is in")
-# parser.add_argument("--data_dir", type=str, default=r"C:\Users\irisc\Documents\CV\grace\Data", help="directory the dataset is in")
+# parser.add_argument("--data_dir", type=str, default=r"C:\Users\51236\Documents\CV\grace\Data", help="directory the dataset is in")
+parser.add_argument("--data_dir", type=str, default=r"C:\Users\irisc\Documents\CV\grace\Data", help="directory the dataset is in")
 # parser.add_argument("--data_dir", type=str, default=r"C:\Users\iris\Desktop\GRACE\Data", help="directory the dataset is in")
 args = parser.parse_args()
 
@@ -115,35 +115,35 @@ test_loader = DataLoader(
 
 #-----------------------------------
 # Set up gpu device and unetr model
-#-----------------------------------
-if args.dataparallel == "True" and device.type == "cuda":
-    model = nn.DataParallel(
-        UNETR(
-        in_channels=1,
-        out_channels=args.N_classes,
-        img_size=(args.spatial_size, args.spatial_size, args.spatial_size),
-        feature_size=16, 
-        hidden_size=768,
-        mlp_dim=3072,
-        num_heads=12,
-        norm_name="instance",
-        res_block=True,
-        dropout_rate=0.0,
-    ), device_ids=[i for i in range(args.num_gpu)]).cuda()
-  
-elif args.dataparallel == "False" or device.type != "cuda":  
-    model = UNETR(
-        in_channels=1,
-        out_channels=args.N_classes,
-        img_size=(args.spatial_size, args.spatial_size, args.spatial_size),
-        feature_size=16, 
-        hidden_size=768,
-        mlp_dim=3072,
-        num_heads=12,
-        norm_name="instance",
-        res_block=True,
-        dropout_rate=0.0,
-    ).to(device)
+#----------------------------------- 
+from monai.networks.nets import UNETR
+# model = UNETR(
+#     in_channels=1,
+#     out_channels=args.N_classes,
+#     img_size=(args.spatial_size, args.spatial_size, args.spatial_size),
+#     feature_size=16, 
+#     hidden_size=768,
+#     mlp_dim=3072,
+#     num_heads=12,
+#     norm_name="instance",
+#     res_block=True,
+#     dropout_rate=0.0,
+# ).to(device)
+
+from model.aftunet import AFTUNET
+model = AFTUNET(
+    in_channels=1,
+    out_channels=args.N_classes,
+    img_size=(args.spatial_size, args.spatial_size, args.spatial_size),
+    feature_size=16,     # 保持與 UNETR 一致
+    hidden_size=768,     # 保持與 UNETR 一致
+    mlp_dim=3072,        # 保持與 UNETR 一致
+    num_heads=12,        # 保持與 UNETR 一致
+    norm_name="instance",
+    res_block=True,
+    dropout_rate=0.0,
+    spatial_dims=3,
+).to(device)
 
 loss_function = DiceCELoss(to_onehot_y=True, softmax=True)
 
