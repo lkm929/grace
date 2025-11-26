@@ -67,7 +67,9 @@ parser.add_argument("--batch_size_test", type=int, default=1, help="batch size t
 parser.add_argument("--model_load_name", type=str, default="unetr_v5_cos.pth", help="model to load")
 parser.add_argument("--dataparallel", type=str, default="False", help="did your model use multi-gpu")
 parser.add_argument("--json_name", type=str, default=r"dataset.json", help="name of the file used to map data splits")
-parser.add_argument("--data_dir", type=str, default=r"C:\Users\iris\Desktop\GRACE\Data", help="directory the dataset is in")
+parser.add_argument("--data_dir", type=str, default=r"C:\Users\51236\Documents\CV\grace\Data", help="directory the dataset is in")
+# parser.add_argument("--data_dir", type=str, default=r"C:\Users\irisc\Documents\CV\grace\Data", help="directory the dataset is in")
+# parser.add_argument("--data_dir", type=str, default=r"C:\Users\iris\Desktop\GRACE\Data", help="directory the dataset is in")
 args = parser.parse_args()
 
 split_JSON = args.json_name # Make sure that the JSON file, with exact name, is in the data_dir folder
@@ -147,7 +149,6 @@ loss_function = DiceCELoss(to_onehot_y=True, softmax=True)
 
 if device.type == "cuda":
     torch.backends.cudnn.benchmark = True
-optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-5)
 
 #-----------------------------------
 model.load_state_dict(torch.load(os.path.join(args.data_dir, args.model_load_name)))#, strict=False)
